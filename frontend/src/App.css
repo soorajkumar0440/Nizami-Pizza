@@ -1,0 +1,29 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Static UI — no scroll-reveal hide */
+[data-reveal] {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  filter: none !important;
+  clip-path: none !important;
+}
+
+/* Disable unused legacy hero animations */
+.hero-premium-badge .dot.glow,
+.floating-dish-wrapper::after,
+.hero-stone-scroll {
+  animation: none !important;
+}
+
+.hero-stone-scroll {
+  display: none;
+}

@@ -1,0 +1,12 @@
+{
+  "name": "foods-root",
+  "version": "1.0.0",
+  "description": "Root package for running both frontend and backend",
+  "scripts": {
+    "start": "concurrently \"npm start --prefix backend\" \"npm run dev --prefix frontend\"",
+    "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

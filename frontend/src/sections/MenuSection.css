@@ -1,0 +1,120 @@
+/* Menu section — category banners */
+
+.menu-category-section {
+  margin-bottom: 56px;
+  scroll-margin-top: 70px;
+}
+
+.menu-category-banner {
+  margin-bottom: 28px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.banner-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 21 / 7;
+  min-height: 160px;
+  max-height: 280px;
+  overflow: hidden;
+  background: #111;
+}
+
+.banner-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.3) 45%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  z-index: 1;
+}
+
+.banner-content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 28px 40px;
+  width: 100%;
+}
+
+.banner-title {
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  margin: 0 0 6px;
+  color: #fff;
+  font-family: var(--font-header, 'Syne', sans-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  font-weight: 800;
+  text-align: left;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+}
+
+.banner-item-count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(200, 200, 200, 0.85);
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.menu-empty-category {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.95rem;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  margin-top: 20px;
+}
+
+.menu-no-content {
+  text-align: center;
+  padding: 80px 24px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.menu-no-content h3 {
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.tab-name {
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .banner-image-wrapper {
+    aspect-ratio: 16 / 9;
+    min-height: 140px;
+    max-height: 200px;
+  }
+
+  .banner-content {
+    padding: 20px 18px;
+  }
+
+  .banner-title {
+    font-size: 1.8rem;
+    letter-spacing: 0.05em;
+  }
+}

@@ -1,0 +1,26 @@
+.single-page {
+    --sp-header-offset: 110px;
+}
+
+.single-page .hero-stone-spotlight.hero-compact {
+    padding-top: 120px;
+}
+
+.single-page section[id] {
+    scroll-margin-top: var(--sp-header-offset);
+}
+
+#home {
+    scroll-margin-top: 0;
+}
+
+.sp-menu-section {
+    padding: 0;
+    background: #050505;
+}
+
+@media (max-width: 768px) {
+    .single-page {
+        --sp-header-offset: 80px;
+    }
+}

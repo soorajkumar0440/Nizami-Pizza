@@ -1,0 +1,60 @@
+.shop-closed-banner {
+    margin: 0 auto 24px;
+    max-width: 900px;
+    padding: 18px 22px;
+    border-radius: 12px;
+    background: var(--brand-yellow-muted);
+    border: 1px solid rgba(255, 215, 0, 0.45);
+    text-align: center;
+}
+
+.shop-closed-title {
+    margin: 0 0 8px;
+    font-weight: 700;
+    color: var(--brand-yellow);
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.shop-closed-msg {
+    margin: 0 0 12px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.95rem;
+}
+
+.shop-closed-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.shop-closed-meta span,
+.shop-closed-meta a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.shop-closed-meta a {
+    color: var(--brand-yellow);
+    text-decoration: none;
+}
+
+@media (max-width: 480px) {
+    .shop-closed-banner {
+        padding: 14px 16px;
+    }
+    .shop-closed-meta {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+    }
+    .shop-closed-meta span,
+    .shop-closed-meta a {
+        padding: 8px;
+        touch-action: manipulation;
+    }
+}

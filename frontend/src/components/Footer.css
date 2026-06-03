@@ -1,0 +1,296 @@
+/* ================================================
+   NIZAMI FOOTER V3 — Broadway Pizza inspired
+   ================================================ */
+
+.footer-v3 {
+    position: relative;
+    background: #0a0a0a;
+    color: #fff;
+    margin-top: 60px;
+    font-family: 'Poppins', var(--font-body), system-ui, sans-serif;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Main area ── */
+.footer-v3-main {
+    padding: 56px 0 44px;
+}
+
+.footer-v3-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr 1fr 1.3fr;
+    gap: 48px;
+}
+
+/* ── Brand column ── */
+.footer-v3-brand {
+    padding-right: 20px;
+}
+
+.footer-v3-logo-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    margin-bottom: 18px;
+}
+
+.footer-v3-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    object-fit: cover;
+}
+
+.footer-v3-logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-v3-logo-main {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: 2px;
+}
+
+.footer-v3-logo-sub {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    margin-top: 4px;
+}
+
+.footer-v3-tagline {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* ── Column headings ── */
+.footer-v3-heading {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 22px 0;
+    text-transform: uppercase;
+}
+
+/* ── Link lists ── */
+.footer-v3-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-v3-links li {
+    margin-bottom: 14px;
+}
+
+.footer-v3-links a,
+.footer-v3-link-btn {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 400;
+    transition: color 0.25s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.footer-v3-links a:hover,
+.footer-v3-link-btn:hover {
+    color: #f0b100;
+}
+
+.footer-v3-cart-badge {
+    background: #c60001;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 10px;
+}
+
+/* ── Social icons ── */
+.footer-v3-social-icons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.footer-v3-social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.footer-v3-social-btn:hover {
+    background: #c60001;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.footer-v3-quote {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 0.82rem;
+    font-style: italic;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ── Bottom bar ── */
+.footer-v3-bottom {
+    background: #050505;
+    padding: 18px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.footer-v3-bottom-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.footer-v3-bottom p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.82rem;
+    font-weight: 400;
+}
+
+.footer-v3-bottom-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-v3-bottom-links a {
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 400;
+    transition: color 0.25s ease;
+}
+
+.footer-v3-bottom-links a:hover {
+    color: #f0b100;
+}
+
+.footer-v3-sep {
+    color: rgba(255, 255, 255, 0.15);
+}
+
+/* ================================================
+   RESPONSIVE
+   ================================================ */
+
+/* Tablet & Mobile — 2x2 Grid Layout */
+@media (max-width: 1024px) {
+    .footer-v3-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 36px 32px;
+    }
+    .footer-v3-brand {
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-v3 {
+        margin-top: 44px;
+    }
+    .footer-v3-main {
+        padding: 40px 0 32px;
+    }
+    .footer-v3-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px 20px;
+    }
+    .footer-v3-social-icons {
+        flex-wrap: wrap;
+    }
+    .footer-v3-bottom-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-v3-main {
+        padding: 32px 20px 28px;
+    }
+    .footer-v3-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 36px 20px;
+    }
+    .footer-v3-logo {
+        width: 38px;
+        height: 38px;
+    }
+    .footer-v3-logo-link {
+        margin-bottom: 12px;
+    }
+    .footer-v3-logo-main {
+        font-size: 0.95rem;
+    }
+    .footer-v3-logo-sub {
+        font-size: 0.48rem;
+    }
+    .footer-v3-heading {
+        font-size: 0.65rem;
+        margin-bottom: 14px;
+        letter-spacing: 1px;
+    }
+    .footer-v3-links li {
+        margin-bottom: 12px;
+    }
+    .footer-v3-links a,
+    .footer-v3-link-btn {
+        font-size: 0.7rem;
+    }
+    .footer-v3-tagline {
+        font-size: 0.68rem;
+        line-height: 1.5;
+    }
+    .footer-v3-bottom {
+        padding: 16px 20px;
+    }
+    .footer-v3-bottom p,
+    .footer-v3-bottom-links a {
+        font-size: 0.65rem;
+    }
+    .footer-v3-social-btn {
+        width: 32px;
+        height: 32px;
+    }
+    .footer-v3-social-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+    .footer-v3-quote {
+        font-size: 0.65rem;
+        margin-top: 8px;
+    }
+}

@@ -1,0 +1,240 @@
+/* Floating Action Buttons */
+.fab-wrapper {
+    position: fixed;
+    z-index: 4000;
+}
+
+.fab-left-bottom {
+    bottom: 30px;
+    left: 30px;
+}
+
+.fab-right-bottom {
+    bottom: 30px;
+    right: 30px;
+}
+
+.fab-right-mid {
+    bottom: 90px;
+    right: 30px;
+}
+
+.fab-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    color: #fff;
+}
+
+.fab-btn:hover {
+    transform: scale(1.1);
+}
+
+.fab-primary {
+    background: #ff0000;
+    border: 1px solid #cc0000;
+}
+
+.fab-primary:hover {
+    background: #cc0000;
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
+}
+
+.fab-secondary {
+    background: rgba(30, 30, 30, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 45px;
+    height: 45px;
+    margin: 0 auto;
+}
+
+.fab-secondary:hover {
+    background: rgba(50, 50, 50, 0.9);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.fab-cart {
+    background: #f0b100;
+    color: #000;
+    border: 1px solid #b38500;
+}
+
+.fab-cart:hover {
+    background: #d89e00;
+    box-shadow: 0 6px 20px rgba(240, 177, 0, 0.4);
+}
+
+.fab-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff0000;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid #000;
+    animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes badgePop {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+}
+
+/* Mobile Bottom Navigation Bar */
+.mobile-bottom-nav {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .fab-left-bottom {
+        bottom: 20px;
+        left: 20px;
+    }
+    .fab-right-bottom {
+        bottom: 20px;
+        right: 20px;
+    }
+    .fab-right-mid {
+        bottom: 75px;
+        right: 20px;
+    }
+    
+    .fab-btn {
+        width: 45px;
+        height: 45px;
+    }
+
+    .fab-secondary {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 600px) {
+    .desktop-fabs {
+        display: none; /* Hide FABs on mobile entirely */
+    }
+
+    /* Mobile Bottom Nav Styles */
+    .mobile-bottom-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 32px);
+        max-width: 400px;
+        height: 64px;
+        background: rgba(25, 25, 25, 0.95);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 40px;
+        z-index: 4000;
+        padding: 0 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .mbn-item {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.5);
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    /* Specific Icon Colors based on reference image */
+    .mbn-item:nth-child(1) { color: #f0b100; } /* Home */
+    .mbn-item:nth-child(2) { color: #f0b100; opacity: 0.8; } /* Menu */
+    .mbn-item:nth-child(4) { color: #ef4444; } /* Flame */
+    .mbn-item:nth-child(5) { color: rgba(255, 255, 255, 0.4); } /* Hamburger */
+
+    .mbn-center {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .mbn-cart-btn {
+        position: absolute;
+        top: -20px;
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        background: transparent;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .mbn-cart-inner {
+        width: 58px;
+        height: 58px;
+        background: #f0b100;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        box-shadow: 0 0 25px rgba(240, 177, 0, 0.5), inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+        position: relative;
+    }
+
+    .mbn-badge {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        background: #ff0000;
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: 800;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 2px solid #000;
+        animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+}
+
+
+@media (max-width: 600px) {
+    .scroll-up-fab {
+        bottom: 100px !important;
+        right: 20px !important;
+        z-index: 3999 !important;
+    }
+}

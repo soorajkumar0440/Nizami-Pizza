@@ -1,0 +1,181 @@
+/* Nizami — hero ke neeche category + search (dark theme) */
+
+.menu-browse-strip {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: linear-gradient(180deg, rgba(8, 8, 8, 0.98) 0%, rgba(5, 5, 5, 0.95) 100%);
+    border-bottom: 1px solid rgba(255, 0, 0, 0.25);
+    padding: 12px 0 16px;
+    backdrop-filter: blur(16px);
+}
+
+.menu-browse-strip-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.menu-cat-rail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.menu-cat-arrow {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: #f0b100;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-cat-arrow:hover {
+    transform: scale(1.06);
+    background: #d89e00;
+}
+
+.menu-cat-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 4px 0;
+}
+
+.menu-cat-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.menu-cat-scroll.menu-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    background: transparent;
+    border: none;
+    padding: 4px 8px;
+}
+
+.sp-menu-search-block {
+    padding: 20px 0 8px;
+    background: #050505;
+}
+
+.sp-menu-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 12px 22px;
+    max-width: 600px;
+    margin: 0 auto;
+    backdrop-filter: blur(20px);
+}
+
+
+.sp-menu-search-bar input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.sp-menu-search-bar:focus-within {
+    border-color: rgba(255, 0, 0, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.15);
+}
+
+.sp-search-icon {
+    color: rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+.sp-search-clear {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+.sp-menu-intro {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sp-menu-hint {
+    max-width: 520px !important;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sp-active-category-label {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.sp-active-category-label span {
+    color: #ffd700;
+    font-weight: 700;
+}
+
+.menu-products-panel {
+    background: #050505;
+    padding: 32px 0 80px;
+}
+
+.menu-search-results-info {
+    margin-bottom: 24px;
+    padding: 12px 18px;
+    background: var(--brand-yellow-muted);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    color: #ffd700;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .menu-browse-strip {
+        top: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-cat-arrow {
+        width: 44px;
+        height: 44px;
+        touch-action: manipulation;
+    }
+
+    .sp-menu-search-bar {
+        padding: 12px 16px;
+        border-radius: 20px;
+    }
+    
+    .sp-menu-search-bar input {
+        font-size: 16px;
+    }
+    
+    .menu-cat-scroll {
+        -webkit-overflow-scrolling: touch;
+    }
+}
