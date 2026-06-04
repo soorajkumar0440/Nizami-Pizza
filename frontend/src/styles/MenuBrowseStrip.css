@@ -85,6 +85,7 @@
 
 .sp-menu-search-bar input {
     flex: 1;
+    min-width: 0;
     background: none;
     border: none;
     outline: none;
@@ -104,6 +105,7 @@
 }
 
 .sp-search-clear {
+    flex-shrink: 0;
     background: rgba(255, 255, 255, 0.1);
     border: none;
     border-radius: 50%;
@@ -114,6 +116,10 @@
     justify-content: center;
     color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
+}
+
+.sp-search-submit {
+    flex-shrink: 0;
 }
 
 .sp-menu-intro {
