@@ -275,6 +275,16 @@
   color: #fff;
 }
 
+@media (max-width: 768px) {
+  .dark-pro-card:hover {
+    transform: none;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+  .dark-pro-card:hover .dark-pro-img-box img.img-fill {
+    transform: none;
+  }
+}
+
 @media (max-width: 600px) {
   .dark-pro-img-box {
     height: auto;
@@ -287,10 +297,6 @@
     border-radius: 16px;
     padding: 8px 8px 12px;
     gap: 0;
-  }
-  
-  .dark-pro-card:hover {
-    transform: none;
   }
   
   .dark-pro-img-box {
