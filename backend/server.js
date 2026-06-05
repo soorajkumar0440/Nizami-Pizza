@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 
 // Load environment variables from .env
@@ -9,6 +10,20 @@ dotenv.config();
 
 // Connect to MongoDB
 connectDB();
+
+// Auto-reconnect on disconnect
+mongoose.connection.on('disconnected', () => {
+    console.log('⚠️ MongoDB disconnected! Attempting reconnect...');
+    const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
+    mongoose.connect(uri, {
+        serverSelectionTimeoutMS: 30000,
+        socketTimeoutMS: 45000,
+    }).catch(err => console.error('Auto-reconnect failed:', err.message));
+});
+
+mongoose.connection.on('error', (err) => {
+    console.error('MongoDB connection error:', err.message);
+});
 
 const app = express();
 
@@ -25,9 +40,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Ensure Database is connected before serving API routes (Fix for idle drop)
 app.use('/api', async (req, res, next) => {
+    // Skip health check from this middleware (health has its own reconnect)
+    if (req.path === '/health') return next();
+
     if (mongoose.connection.readyState !== 1) {
         try {
-            console.log('🔄 Reconnecting to MongoDB...');
+            console.log('🔄 Reconnecting to MongoDB (middleware)...');
             const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
             await mongoose.connect(uri, {
                 serverSelectionTimeoutMS: 30000,
@@ -36,7 +54,7 @@ app.use('/api', async (req, res, next) => {
             console.log('✅ MongoDB Reconnected on demand!');
         } catch (error) {
             console.error('❌ MongoDB Reconnection Failed:', error.message);
-            return res.status(500).json({ message: 'Database connection failed, please try again.' });
+            return res.status(503).json({ message: 'Server is waking up, please retry in a few seconds.' });
         }
     }
     next();
@@ -51,28 +69,36 @@ app.use('/api/upload', require('./routes/upload'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/banners', require('./routes/banners'));
 
-// app.get('/', (req, res) => {
-//     res.send('Nizami API is working fine!');
-// });
-
 app.get('/', (req, res) => {
     res.status(200).json({ message: "Server is alive" });
 });
-const mongoose = require('mongoose');
 
-// Health check
+// Health check — also reconnects DB if needed
 app.get('/api/health', async (req, res) => {
     try {
         let dbStatus = 'Disconnected';
+
+        if (mongoose.connection.readyState !== 1) {
+            // DB is not connected — try to reconnect
+            console.log('🔄 Health check: DB disconnected, reconnecting...');
+            const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
+            await mongoose.connect(uri, {
+                serverSelectionTimeoutMS: 30000,
+                socketTimeoutMS: 45000,
+            });
+            console.log('✅ Health check: DB Reconnected!');
+        }
+
         if (mongoose.connection.readyState === 1) {
             dbStatus = 'Connected';
             // Ping DB to keep the MongoDB connection alive!
             await mongoose.connection.db.admin().ping();
         }
+
         res.json({ status: 'OK', message: 'Nizami API is running', database: dbStatus });
     } catch (err) {
-        console.error('Health check DB ping failed:', err);
-        res.json({ status: 'OK', message: 'Nizami API is running', database: 'Error' });
+        console.error('Health check failed:', err.message);
+        res.json({ status: 'OK', message: 'Nizami API is running', database: 'Reconnecting' });
     }
 });
 
@@ -90,22 +116,21 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`\nNizami API Server running on port ${PORT}`);
     console.log(`   http://localhost:${PORT}/api/health\n`);
-
 });
-// Auto-ping to keep the server alive
+
+// Auto-ping every 4 minutes to keep server AND database alive
 setInterval(() => {
     const port = process.env.PORT || 5000;
-    // Replit ka base URL dynamically lein ya hardcode karein
     const url = `http://localhost:${port}`;
 
     const http = require('http');
     http.get(`${url}/api/health`, (res) => {
         if (res.statusCode === 200) {
-            console.log(`[Keep-Alive] Ping successful at ${new Date().toISOString()}`);
+            console.log(`[Keep-Alive] Ping OK at ${new Date().toISOString()}`);
         } else {
-            console.log(`[Keep-Alive] Ping returned status: ${res.statusCode}`);
+            console.log(`[Keep-Alive] Ping status: ${res.statusCode}`);
         }
     }).on('error', (err) => {
         console.error(`[Keep-Alive] Ping failed: ${err.message}`);
     });
-}, 10 * 60 * 1000); // 10 minute ka interval zyada behtar hai
+}, 4 * 60 * 1000); // Every 4 minutes (Replit sleeps after 5 min inactivity)

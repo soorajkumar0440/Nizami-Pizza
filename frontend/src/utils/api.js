@@ -5,6 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 // Create axios instance
 const api = axios.create({
     baseURL: API_BASE_URL,
+    timeout: 30000, // 30 second timeout for cold starts
     headers: {
         'Content-Type': 'application/json'
     }
@@ -19,17 +20,59 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// Handle 401 responses (token expired)
+// ---- AUTO-RETRY on failure (fixes Replit cold-start) ----
 api.interceptors.response.use(
     (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem('nizami_token');
-            localStorage.removeItem('nizami_user');
+    async (error) => {
+        const config = error.config;
+
+        // Don't retry if we already retried 3 times, or it's a 401/400 (real errors)
+        if (
+            config._retryCount >= 3 ||
+            error.response?.status === 401 ||
+            error.response?.status === 400 ||
+            error.response?.status === 403 ||
+            error.response?.status === 404
+        ) {
+            // Handle 401 (expired token)
+            if (error.response?.status === 401) {
+                localStorage.removeItem('nizami_token');
+                localStorage.removeItem('nizami_user');
+            }
+            return Promise.reject(error);
         }
-        return Promise.reject(error);
+
+        // It's a network error or 500/502/503 — server is waking up, RETRY
+        config._retryCount = (config._retryCount || 0) + 1;
+        console.log(`[API Retry] Attempt ${config._retryCount}/3 for ${config.url}`);
+
+        // Wait before retrying (2s, 4s, 6s)
+        await new Promise(resolve => setTimeout(resolve, config._retryCount * 2000));
+
+        return api(config);
     }
 );
+
+// ---- WAKE-UP PING: Call this on app start to wake Replit ----
+export const wakeUpServer = async () => {
+    try {
+        const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
+        await axios.get(`${baseUrl}/api/health`, { timeout: 35000 });
+        console.log('[WakeUp] Server is awake!');
+        return true;
+    } catch (err) {
+        console.warn('[WakeUp] Server may be slow, retrying...');
+        try {
+            const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
+            await axios.get(`${baseUrl}/api/health`, { timeout: 35000 });
+            console.log('[WakeUp] Server is awake on retry!');
+            return true;
+        } catch {
+            console.error('[WakeUp] Server is not responding');
+            return false;
+        }
+    }
+};
 
 // ==================== AUTH ====================
 export const authAPI = {

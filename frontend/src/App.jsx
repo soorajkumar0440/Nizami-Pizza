@@ -16,6 +16,7 @@ import HashRedirect from './components/HashRedirect';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import { useSiteContact } from './utils/siteContact';
+import { wakeUpServer } from './utils/api';
 import logoImg from './assets/images/logo.png';
 import './App.css';
 
@@ -27,6 +28,11 @@ function AppLayout() {
 
   const { siteName, logoUrl } = useSiteContact();
   const [splashFinished, setSplashFinished] = useState(false);
+
+  // Wake up Replit backend immediately on app load
+  useEffect(() => {
+    wakeUpServer();
+  }, []);
 
   useEffect(() => {
     // Update document title
