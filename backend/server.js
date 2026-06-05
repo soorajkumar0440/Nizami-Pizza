@@ -28,14 +28,15 @@ app.use('/api', async (req, res, next) => {
     if (mongoose.connection.readyState !== 1) {
         try {
             console.log('🔄 Reconnecting to MongoDB...');
-            await mongoose.connect(process.env.MONGODB_URI, {
+            const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
+            await mongoose.connect(uri, {
                 serverSelectionTimeoutMS: 30000,
                 socketTimeoutMS: 45000,
             });
             console.log('✅ MongoDB Reconnected on demand!');
         } catch (error) {
-            console.error('❌ MongoDB Reconnection Failed:', error);
-            // Don't crash, let the user know to retry
+            console.error('❌ MongoDB Reconnection Failed:', error.message);
+            return res.status(500).json({ message: 'Database connection failed, please try again.' });
         }
     }
     next();
