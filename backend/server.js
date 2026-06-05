@@ -29,7 +29,7 @@ app.use('/api', async (req, res, next) => {
         try {
             console.log('🔄 Reconnecting to MongoDB...');
             await mongoose.connect(process.env.MONGODB_URI, {
-                serverSelectionTimeoutMS: 5000,
+                serverSelectionTimeoutMS: 30000,
                 socketTimeoutMS: 45000,
             });
             console.log('✅ MongoDB Reconnected on demand!');
