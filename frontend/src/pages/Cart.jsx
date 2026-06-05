@@ -49,7 +49,8 @@ export default function Cart() {
         navigate('/menu');
     };
 
-    const handlePlaceOrder = async () => {
+    const handlePlaceOrder = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
         const { fullName, phone, address, landmark } = checkout;
 
         if (!fullName.trim()) {
@@ -183,7 +184,7 @@ export default function Cart() {
                         </button>
                     </div>
 
-                    <div className="checkout-layout">
+                    <form className="checkout-layout" onSubmit={handlePlaceOrder}>
                         <div className="checkout-form-card card">
                             <div className="checkout-form-header">
                                 <button type="button" className="back-to-cart-btn" onClick={handleBackToCart}>
@@ -373,8 +374,8 @@ export default function Cart() {
                                 </div>
 
                                 <button
+                                    type="submit"
                                     className="btn btn-primary checkout-btn place-order-btn"
-                                    onClick={handlePlaceOrder}
                                     disabled={isProcessing || !shopStatus.isOpen}
                                 >
                                     {isProcessing ? (
@@ -387,7 +388,7 @@ export default function Cart() {
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </section>
         </div>
