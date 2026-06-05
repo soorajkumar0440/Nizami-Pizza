@@ -83,48 +83,60 @@ export default function AdminDashboard() {
             document.removeEventListener('click', unlock);
             document.removeEventListener('touchstart', unlock);
             if (soundIntervalRef.current) clearInterval(soundIntervalRef.current);
+            if (alarmIntervalRef.current) clearInterval(alarmIntervalRef.current);
         };
     }, [isAdmin, navigate, isLoading]);
 
     const playSound = useCallback(() => {
-        if (isPlayingAlertRef.current) return;
-        // Only play if the admin dashboard tab is active/visible
+        if (!audioRef.current) return;
         if (document.visibilityState !== 'visible') return;
-        try {
-            isPlayingAlertRef.current = true;
-            let played = 0;
 
-            const playOnce = () => {
-                if (!audioRef.current) return;
-                const clip = audioRef.current.cloneNode(true); // Clone so each play is independent
+        let played = 0;
+        const playOnce = () => {
+            try {
+                const clip = audioRef.current.cloneNode(true);
                 clip.volume = 1;
                 clip.currentTime = 0;
                 clip.play().catch(() => {});
                 played++;
 
                 if (played < SOUND_REPEAT) {
-                    // Wait for the clip to finish (~2s) before playing the next one
+                    // Wait for sound to fully finish, then play next
                     clip.onended = () => {
-                        setTimeout(() => playOnce(), 500); // 500ms gap between repeats
+                        setTimeout(playOnce, 400);
                     };
-                    // Fallback if onended doesn't fire
+                    // Fallback if onended doesn't fire (some mobile browsers)
                     setTimeout(() => {
                         if (played < SOUND_REPEAT) playOnce();
-                    }, 3000);
-                } else {
-                    // All 3 plays done, unlock for future alerts
-                    clip.onended = () => {
-                        isPlayingAlertRef.current = false;
-                    };
-                    setTimeout(() => {
-                        isPlayingAlertRef.current = false;
-                    }, 3000);
+                    }, 2500);
                 }
-            };
+            } catch {}
+        };
+        playOnce();
+    }, []);
 
-            playOnce();
-        } catch {
-            isPlayingAlertRef.current = false;
+    /** Persistent alarm: repeats every 10 seconds until stopped */
+    const alarmIntervalRef = useRef(null);
+
+    const startPersistentAlarm = useCallback(() => {
+        // Don't start duplicate alarms
+        if (alarmIntervalRef.current) return;
+
+        // Play immediately
+        playSound();
+
+        // Repeat every 10 seconds
+        alarmIntervalRef.current = setInterval(() => {
+            if (document.visibilityState === 'visible' && audioUnlockedRef.current) {
+                playSound();
+            }
+        }, 10000);
+    }, [playSound]);
+
+    const stopPersistentAlarm = useCallback(() => {
+        if (alarmIntervalRef.current) {
+            clearInterval(alarmIntervalRef.current);
+            alarmIntervalRef.current = null;
         }
     }, []);
 
@@ -133,7 +145,7 @@ export default function AdminDashboard() {
 
     const alertNewOrders = useCallback((newOrderCount) => {
         const now = Date.now();
-        if (now - lastAlertTimeRef.current < 5000) return; // debounce 5s
+        if (now - lastAlertTimeRef.current < 5000) return;
         lastAlertTimeRef.current = now;
 
         setNewOrderPopup(true);
@@ -145,7 +157,9 @@ export default function AdminDashboard() {
             isAdmin;
 
         if (canAlert) {
-            playSound();
+            // Start persistent alarm (repeats every 10s until order accepted)
+            startPersistentAlarm();
+
             if ('Notification' in window && Notification.permission === 'granted') {
                 try {
                     new Notification(`${siteName} — New order!`, {
@@ -160,7 +174,7 @@ export default function AdminDashboard() {
             }
         }
         loadData();
-    }, [playSound, isAdmin, siteName, logoUrl]);
+    }, [startPersistentAlarm, isAdmin, siteName, logoUrl]);
 
     // Fast poll for new orders (dashboard only — this page is not mounted elsewhere)
     useEffect(() => {
@@ -180,6 +194,11 @@ export default function AdminDashboard() {
                     alertedUnseenRef.current = count;
                 } else if (count < baseline) {
                     alertedUnseenRef.current = count;
+                }
+
+                // Stop alarm if no more unseen orders (admin accepted all)
+                if (count === 0 && alarmIntervalRef.current) {
+                    stopPersistentAlarm();
                 }
 
                 setUnseenCount(count);
@@ -234,6 +253,7 @@ export default function AdminDashboard() {
             adminAPI.markOrdersSeen().catch(() => {});
             alertedUnseenRef.current = 0;
             setUnseenCount(0);
+            stopPersistentAlarm();
         }
     }, [activeTab]);
 
@@ -263,6 +283,8 @@ export default function AdminDashboard() {
         try {
             await ordersAPI.updateStatus(orderId, status);
             showNotif(`Order → ${status}`);
+            // Stop the alarm when admin accepts/changes any order
+            stopPersistentAlarm();
             loadData();
         } catch { showNotif('Error updating order', 'error'); }
     };
