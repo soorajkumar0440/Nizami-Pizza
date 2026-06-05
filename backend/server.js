@@ -23,6 +23,24 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded images as static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Ensure Database is connected before serving API routes (Fix for idle drop)
+app.use('/api', async (req, res, next) => {
+    if (mongoose.connection.readyState !== 1) {
+        try {
+            console.log('🔄 Reconnecting to MongoDB...');
+            await mongoose.connect(process.env.MONGODB_URI, {
+                serverSelectionTimeoutMS: 5000,
+                socketTimeoutMS: 45000,
+            });
+            console.log('✅ MongoDB Reconnected on demand!');
+        } catch (error) {
+            console.error('❌ MongoDB Reconnection Failed:', error);
+            // Don't crash, let the user know to retry
+        }
+    }
+    next();
+});
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/deals', require('./routes/deals'));
