@@ -88,28 +88,41 @@ export default function AdminDashboard() {
 
     const playSound = useCallback(() => {
         if (isPlayingAlertRef.current) return;
+        // Only play if the admin dashboard tab is active/visible
+        if (document.visibilityState !== 'visible') return;
         try {
             isPlayingAlertRef.current = true;
+            let played = 0;
+
             const playOnce = () => {
                 if (!audioRef.current) return;
-                const clip = audioRef.current;
+                const clip = audioRef.current.cloneNode(true); // Clone so each play is independent
                 clip.volume = 1;
                 clip.currentTime = 0;
                 clip.play().catch(() => {});
-            };
-            playOnce();
-            if (soundIntervalRef.current) clearInterval(soundIntervalRef.current);
-            let n = 1;
-            soundIntervalRef.current = setInterval(() => {
-                if (n >= SOUND_REPEAT) {
-                    clearInterval(soundIntervalRef.current);
-                    soundIntervalRef.current = null;
-                    isPlayingAlertRef.current = false;
-                    return;
+                played++;
+
+                if (played < SOUND_REPEAT) {
+                    // Wait for the clip to finish (~2s) before playing the next one
+                    clip.onended = () => {
+                        setTimeout(() => playOnce(), 500); // 500ms gap between repeats
+                    };
+                    // Fallback if onended doesn't fire
+                    setTimeout(() => {
+                        if (played < SOUND_REPEAT) playOnce();
+                    }, 3000);
+                } else {
+                    // All 3 plays done, unlock for future alerts
+                    clip.onended = () => {
+                        isPlayingAlertRef.current = false;
+                    };
+                    setTimeout(() => {
+                        isPlayingAlertRef.current = false;
+                    }, 3000);
                 }
-                playOnce();
-                n += 1;
-            }, 900);
+            };
+
+            playOnce();
         } catch {
             isPlayingAlertRef.current = false;
         }

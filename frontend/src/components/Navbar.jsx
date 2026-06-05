@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import './Navbar.css';
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
-import { ShoppingCart, Menu, X, MapPin, Phone, ChevronDown } from 'lucide-react';
+import { ShoppingCart, Menu, X, MapPin, Phone, ChevronDown, Home as HomeIcon, UtensilsCrossed, Tag, BookOpen, MessageCircle } from 'lucide-react';
 import { useSiteContact } from '../utils/siteContact';
 import { useShopStatus } from '../context/ShopStatusContext';
 import logoImg from '../assets/images/logo.png';
@@ -109,29 +109,33 @@ export default function Navbar() {
           />
           <aside className="boc-drawer-panel">
             <header className="boc-drawer-header">
-              <div>
-                <h2>Menu</h2>
-                <p>Navigate</p>
+              <div className="boc-drawer-logo-wrapper">
+                <img src={logoUrl || logoImg} alt={siteName || 'Nizami Food'} className="boc-drawer-logo" />
+                <div>
+                  <h2>{siteName || 'Nizami Food'}</h2>
+                  <p>Premium Quality</p>
+                </div>
               </div>
               <button type="button" className="boc-drawer-close" onClick={closeMenu} aria-label="Close">
                 <X size={22} />
               </button>
             </header>
             <div className="boc-drawer-body">
-              {['Home', 'Menu', 'Deals', 'Story', 'Contact'].map((item) => (
+              {[
+                { name: 'Home', icon: <HomeIcon size={20} />, path: '/' },
+                { name: 'Menu', icon: <UtensilsCrossed size={20} />, path: '/menu' },
+                { name: 'Deals', icon: <Tag size={20} />, path: '/deals' },
+                { name: 'Story', icon: <BookOpen size={20} />, path: '/about' },
+                { name: 'Contact', icon: <MessageCircle size={20} />, path: '/contact' },
+              ].map((item) => (
                 <Link
-                  key={item}
-                  to={
-                    item === 'Home'
-                      ? '/'
-                      : item === 'Story'
-                        ? '/about'
-                        : `/${item.toLowerCase()}`
-                  }
+                  key={item.name}
+                  to={item.path}
                   className="boc-drawer-link"
                   onClick={closeMenu}
                 >
-                  {item}
+                  {item.icon}
+                  {item.name}
                 </Link>
               ))}
             </div>
