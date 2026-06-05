@@ -349,6 +349,10 @@
         animation: cartDrawerSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    .cart-drawer-footer {
+        padding-bottom: max(45px, env(safe-area-inset-bottom, 24px)); /* Pushed up slightly for mobile */
+    }
+
     .cart-drawer-header {
         border-radius: 24px 24px 0 0;
     }
