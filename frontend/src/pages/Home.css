@@ -1302,7 +1302,7 @@
 }
 
 .contact-item h4 {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: #fff;
   margin: 0;
   font-family: var(--font-body);
@@ -2785,7 +2785,7 @@
 }
 
 .home-delivery-section {
-  padding: 100px 0 120px;
+  padding: 50px 0 120px;
 }
 
 .home-final-ctas {
@@ -2887,5 +2887,5 @@
   /* Home Compact / Deals */
   .hero-compact { padding: 80px 0 40px; }
   .home-why-section { padding: 60px 0; }
-  .home-delivery-section { padding: 60px 0; }
+  .home-delivery-section { padding: 30px 0; }
 }
