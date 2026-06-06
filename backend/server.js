@@ -11,18 +11,23 @@ dotenv.config();
 // Connect to MongoDB
 connectDB();
 
-// Auto-reconnect on disconnect
+// Auto-reconnect on disconnect (with throttle to prevent infinite loop)
+let isReconnecting = false;
 mongoose.connection.on('disconnected', () => {
-    console.log('⚠️ MongoDB disconnected! Attempting reconnect...');
-    const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
-    mongoose.connect(uri, {
-        serverSelectionTimeoutMS: 30000,
-        socketTimeoutMS: 45000,
-    }).catch(err => console.error('Auto-reconnect failed:', err.message));
+    if (isReconnecting) return; // Prevent infinite loop
+    isReconnecting = true;
+    console.log('⚠️ MongoDB disconnected! Will reconnect on next request or health check.');
+    // Reset flag after 15 seconds to allow future reconnect attempts
+    setTimeout(() => { isReconnecting = false; }, 15000);
 });
 
 mongoose.connection.on('error', (err) => {
     console.error('MongoDB connection error:', err.message);
+});
+
+mongoose.connection.on('connected', () => {
+    isReconnecting = false;
+    console.log('✅ MongoDB connected!');
 });
 
 const app = express();
