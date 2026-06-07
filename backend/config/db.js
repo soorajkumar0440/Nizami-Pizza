@@ -10,13 +10,13 @@ const connectDB = async () => {
     try {
         const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
         const conn = await mongoose.connect(uri, {
-            serverSelectionTimeoutMS: 30000,
-            socketTimeoutMS: 45000,
-            family: 4, // Force IPv4 — prevents IPv6 DNS issues on Replit
+            serverSelectionTimeoutMS: 10000,
+            socketTimeoutMS: 30000,
+            family: 4, // Force IPv4
             maxPoolSize: 5,
             minPoolSize: 1,
             maxIdleTimeMS: 60000,
-            connectTimeoutMS: 30000,
+            connectTimeoutMS: 10000,
         });
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {

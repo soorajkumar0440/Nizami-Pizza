@@ -14,11 +14,11 @@ dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
 
 // Standard MongoDB options used everywhere
 const MONGO_OPTIONS = {
-    serverSelectionTimeoutMS: 30000,
-    socketTimeoutMS: 45000,
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 30000,
     family: 4,
     maxPoolSize: 5,
-    connectTimeoutMS: 30000,
+    connectTimeoutMS: 10000,
 };
 
 // Connect to MongoDB
