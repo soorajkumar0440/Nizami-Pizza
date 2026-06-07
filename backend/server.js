@@ -2,11 +2,24 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const dns = require('dns');
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 
 // Load environment variables from .env
 dotenv.config();
+
+// Force Google DNS globally — fixes Replit querySrv ECONNREFUSED
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+
+// Standard MongoDB options used everywhere
+const MONGO_OPTIONS = {
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 45000,
+    family: 4,
+    maxPoolSize: 5,
+    connectTimeoutMS: 30000,
+};
 
 // Connect to MongoDB
 connectDB();
@@ -14,10 +27,9 @@ connectDB();
 // Auto-reconnect on disconnect (with throttle to prevent infinite loop)
 let isReconnecting = false;
 mongoose.connection.on('disconnected', () => {
-    if (isReconnecting) return; // Prevent infinite loop
+    if (isReconnecting) return;
     isReconnecting = true;
     console.log('⚠️ MongoDB disconnected! Will reconnect on next request or health check.');
-    // Reset flag after 15 seconds to allow future reconnect attempts
     setTimeout(() => { isReconnecting = false; }, 15000);
 });
 
@@ -43,19 +55,15 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded images as static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Ensure Database is connected before serving API routes (Fix for idle drop)
+// Ensure Database is connected before serving API routes
 app.use('/api', async (req, res, next) => {
-    // Skip health check from this middleware (health has its own reconnect)
     if (req.path === '/health') return next();
 
     if (mongoose.connection.readyState !== 1) {
         try {
             console.log('🔄 Reconnecting to MongoDB (middleware)...');
             const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
-            await mongoose.connect(uri, {
-                serverSelectionTimeoutMS: 30000,
-                socketTimeoutMS: 45000,
-            });
+            await mongoose.connect(uri, MONGO_OPTIONS);
             console.log('✅ MongoDB Reconnected on demand!');
         } catch (error) {
             console.error('❌ MongoDB Reconnection Failed:', error.message);
@@ -84,19 +92,14 @@ app.get('/api/health', async (req, res) => {
         let dbStatus = 'Disconnected';
 
         if (mongoose.connection.readyState !== 1) {
-            // DB is not connected — try to reconnect
             console.log('🔄 Health check: DB disconnected, reconnecting...');
             const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
-            await mongoose.connect(uri, {
-                serverSelectionTimeoutMS: 30000,
-                socketTimeoutMS: 45000,
-            });
+            await mongoose.connect(uri, MONGO_OPTIONS);
             console.log('✅ Health check: DB Reconnected!');
         }
 
         if (mongoose.connection.readyState === 1) {
             dbStatus = 'Connected';
-            // Ping DB to keep the MongoDB connection alive!
             await mongoose.connection.db.admin().ping();
         }
 
@@ -138,4 +141,4 @@ setInterval(() => {
     }).on('error', (err) => {
         console.error(`[Keep-Alive] Ping failed: ${err.message}`);
     });
-}, 4 * 60 * 1000); // Every 4 minutes (Replit sleeps after 5 min inactivity)
+}, 4 * 60 * 1000);
