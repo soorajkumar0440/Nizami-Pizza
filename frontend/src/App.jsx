@@ -30,8 +30,17 @@ function AppLayout() {
   const [splashFinished, setSplashFinished] = useState(false);
 
   // Wake up Replit backend immediately on app load
+  // This runs in background — splash screen covers the wait
   useEffect(() => {
-    wakeUpServer();
+    const wake = async () => {
+      const awake = await wakeUpServer();
+      if (!awake) {
+        console.warn('[App] Server may be slow — retrying in background...');
+        // One more attempt after 5 seconds
+        setTimeout(() => wakeUpServer(), 5000);
+      }
+    };
+    wake();
   }, []);
 
   useEffect(() => {

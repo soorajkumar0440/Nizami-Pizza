@@ -2,10 +2,14 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+// Track server status globally
+let serverAwake = false;
+let wakeUpPromise = null;
+
 // Create axios instance
 const api = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 30000, // 30 second timeout for cold starts
+    timeout: 45000, // 45 second timeout for cold starts
     headers: {
         'Content-Type': 'application/json'
     }
@@ -22,13 +26,17 @@ api.interceptors.request.use((config) => {
 
 // ---- AUTO-RETRY on failure (fixes Replit cold-start) ----
 api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        // Server responded = it's awake
+        serverAwake = true;
+        return response;
+    },
     async (error) => {
         const config = error.config;
 
-        // Don't retry if we already retried 3 times, or it's a 401/400 (real errors)
+        // Don't retry if we already retried max times, or it's a client error (real errors)
         if (
-            config._retryCount >= 3 ||
+            config._retryCount >= 4 ||
             error.response?.status === 401 ||
             error.response?.status === 400 ||
             error.response?.status === 403 ||
@@ -44,10 +52,12 @@ api.interceptors.response.use(
 
         // It's a network error or 500/502/503 — server is waking up, RETRY
         config._retryCount = (config._retryCount || 0) + 1;
-        console.log(`[API Retry] Attempt ${config._retryCount}/3 for ${config.url}`);
+        serverAwake = false;
+        console.log(`[API Retry] Attempt ${config._retryCount}/4 for ${config.url}`);
 
-        // Wait before retrying (2s, 4s, 6s)
-        await new Promise(resolve => setTimeout(resolve, config._retryCount * 2000));
+        // Wait before retrying (2s, 3s, 5s, 7s) — progressive backoff
+        const delays = [2000, 3000, 5000, 7000];
+        await new Promise(resolve => setTimeout(resolve, delays[config._retryCount - 1] || 5000));
 
         return api(config);
     }
@@ -55,24 +65,45 @@ api.interceptors.response.use(
 
 // ---- WAKE-UP PING: Call this on app start to wake Replit ----
 export const wakeUpServer = async () => {
-    try {
+    // If already waking up, return the same promise (prevent duplicate pings)
+    if (wakeUpPromise) return wakeUpPromise;
+
+    wakeUpPromise = (async () => {
         const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
-        await axios.get(`${baseUrl}/api/health`, { timeout: 35000 });
-        console.log('[WakeUp] Server is awake!');
-        return true;
-    } catch (err) {
-        console.warn('[WakeUp] Server may be slow, retrying...');
-        try {
-            const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
-            await axios.get(`${baseUrl}/api/health`, { timeout: 35000 });
-            console.log('[WakeUp] Server is awake on retry!');
-            return true;
-        } catch {
-            console.error('[WakeUp] Server is not responding');
-            return false;
+        const maxAttempts = 5;
+
+        for (let i = 1; i <= maxAttempts; i++) {
+            try {
+                const response = await axios.get(`${baseUrl}/api/health`, { 
+                    timeout: 40000,
+                    // Don't use the api instance to avoid auth headers
+                });
+                if (response.data?.status === 'OK') {
+                    console.log(`[WakeUp] Server is awake! (attempt ${i})`);
+                    serverAwake = true;
+                    wakeUpPromise = null;
+                    return true;
+                }
+            } catch (err) {
+                console.warn(`[WakeUp] Attempt ${i}/${maxAttempts} failed: ${err.message}`);
+                if (i < maxAttempts) {
+                    // Wait longer between attempts (3s, 5s, 7s, 10s)
+                    const delay = [3000, 5000, 7000, 10000][i - 1] || 5000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
         }
-    }
+
+        console.error('[WakeUp] Server is not responding after all attempts');
+        wakeUpPromise = null;
+        return false;
+    })();
+
+    return wakeUpPromise;
 };
+
+// Check if server is awake
+export const isServerAwake = () => serverAwake;
 
 // ==================== AUTH ====================
 export const authAPI = {
