@@ -160,72 +160,66 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`\nNizami API Server running on port ${PORT}`);
-    console.log(`   http://localhost:${PORT}/api/health\n`);
-});
-
-// ============================================================
-// KEEP-ALIVE SYSTEM — Prevents Replit from sleeping
-// ============================================================
-
-// 1) Self-ping using the PUBLIC Replit URL (not localhost!)
-//    This is the KEY fix — localhost pings don't prevent Replit sleep.
-//    Replit only stays awake when external HTTP traffic comes in.
-const REPLIT_URL = process.env.REPLIT_URL || process.env.REPLIT_DEV_DOMAIN;
-const https = require('https');
-const http = require('http');
-
-function keepAlive() {
-    // Try external URL first (this is what keeps Replit awake)
-    if (REPLIT_URL) {
-        const externalUrl = REPLIT_URL.startsWith('http') 
-            ? REPLIT_URL 
-            : `https://${REPLIT_URL}`;
-        
-        const client = externalUrl.startsWith('https') ? https : http;
-        client.get(`${externalUrl}/api/health`, (res) => {
-            console.log(`[Keep-Alive] External ping OK (${res.statusCode}) at ${new Date().toISOString()}`);
-        }).on('error', (err) => {
-            console.warn(`[Keep-Alive] External ping failed: ${err.message}, trying localhost...`);
-            // Fallback to localhost
-            localPing();
-        });
-    } else {
-        // No external URL configured, use localhost as fallback
-        localPing();
-    }
-}
-
-function localPing() {
-    const port = process.env.PORT || 5000;
-    http.get(`http://localhost:${port}/api/health`, (res) => {
-        console.log(`[Keep-Alive] Local ping OK (${res.statusCode}) at ${new Date().toISOString()}`);
-    }).on('error', (err) => {
-        console.error(`[Keep-Alive] Local ping failed: ${err.message}`);
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`\nNizami API Server running on port ${PORT}`);
+        console.log(`   http://localhost:${PORT}/api/health\n`);
     });
-}
 
-// Ping every 2 minutes (Replit sleeps after ~5 min inactivity)
-setInterval(keepAlive, 2 * 60 * 1000);
+    // ============================================================
+    // KEEP-ALIVE SYSTEM — Prevents Replit from sleeping
+    // ============================================================
+    const REPLIT_URL = process.env.REPLIT_URL || process.env.REPLIT_DEV_DOMAIN;
+    const https = require('https');
+    const http = require('http');
 
-// 2) MongoDB heartbeat — ping the database every 60 seconds to keep connection alive
-setInterval(async () => {
-    if (mongoose.connection.readyState === 1) {
-        try {
-            await mongoose.connection.db.admin().ping();
-            // Silent success — only log errors
-        } catch (err) {
-            console.warn('[DB Heartbeat] Ping failed:', err.message);
-        }
-    } else {
-        console.log('[DB Heartbeat] Not connected, triggering reconnect...');
-        try {
-            const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
-            await mongoose.connect(uri, MONGO_OPTIONS);
-            console.log('[DB Heartbeat] Reconnected!');
-        } catch (err) {
-            console.error('[DB Heartbeat] Reconnect failed:', err.message);
+    function keepAlive() {
+        if (REPLIT_URL) {
+            const externalUrl = REPLIT_URL.startsWith('http') 
+                ? REPLIT_URL 
+                : `https://${REPLIT_URL}`;
+            
+            const client = externalUrl.startsWith('https') ? https : http;
+            client.get(`${externalUrl}/api/health`, (res) => {
+                console.log(`[Keep-Alive] External ping OK (${res.statusCode})`);
+            }).on('error', (err) => {
+                console.warn(`[Keep-Alive] External ping failed: ${err.message}`);
+                localPing();
+            });
+        } else {
+            localPing();
         }
     }
-}, 60 * 1000);
+
+    function localPing() {
+        const port = process.env.PORT || 5000;
+        http.get(`http://localhost:${port}/api/health`, (res) => {
+            console.log(`[Keep-Alive] Local ping OK (${res.statusCode})`);
+        }).on('error', (err) => {
+            console.error(`[Keep-Alive] Local ping failed: ${err.message}`);
+        });
+    }
+
+    setInterval(keepAlive, 2 * 60 * 1000);
+
+    setInterval(async () => {
+        if (mongoose.connection.readyState === 1) {
+            try {
+                await mongoose.connection.db.admin().ping();
+            } catch (err) {
+                console.warn('[DB Heartbeat] Ping failed:', err.message);
+            }
+        } else {
+            console.log('[DB Heartbeat] Not connected, triggering reconnect...');
+            try {
+                const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
+                await mongoose.connect(uri, MONGO_OPTIONS);
+            } catch (err) {
+                console.error('[DB Heartbeat] Reconnect failed:', err.message);
+            }
+        }
+    }, 60 * 1000);
+}
+
+// Export the Express app so Vercel can use it as a serverless function
+module.exports = app;
