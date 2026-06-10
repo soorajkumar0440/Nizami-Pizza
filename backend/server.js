@@ -172,6 +172,18 @@ app.get('/api/health', async (req, res) => {
     }
 });
 
+// Debug endpoint to check DB connection
+app.get('/api/debug-db', (req, res) => {
+    if (mongoose.connection.readyState === 1) {
+        res.json({
+            databaseName: mongoose.connection.db.databaseName,
+            host: mongoose.connection.host
+        });
+    } else {
+        res.json({ status: 'Not connected', readyState: mongoose.connection.readyState });
+    }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
