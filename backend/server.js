@@ -68,7 +68,18 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000', 'https://nizami-pizza.vercel.app'],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        if (origin.startsWith('http://localhost:') || 
+            origin.endsWith('vercel.app') || 
+            origin === 'https://nizami-pizza.vercel.app') {
+            return callback(null, true);
+        }
+        
+        callback(new Error('Not allowed by CORS'));
+    },
     credentials: true
 }));
 app.use(express.json());
@@ -81,21 +92,33 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', async (req, res, next) => {
     if (req.path === '/health') return next();
 
-    if (mongoose.connection.readyState !== 1) {
-        try {
-            console.log('🔄 Reconnecting to MongoDB (middleware)...');
+    // 1 = connected, 2 = connecting
+    if (mongoose.connection.readyState === 1) {
+        return next();
+    }
+
+    try {
+        if (mongoose.connection.readyState === 0 || mongoose.connection.readyState === 3) {
+            console.log('🔄 Connecting to MongoDB (Serverless)...');
             const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
             await mongoose.connect(uri, MONGO_OPTIONS);
-            console.log('✅ MongoDB Reconnected on demand!');
-        } catch (error) {
-            console.error('❌ MongoDB Reconnection Failed:', error.message);
-            return res.status(503).json({ 
-                message: 'Server is waking up, please retry in a few seconds.',
-                retryAfter: 3
-            });
+            console.log('✅ MongoDB Connected!');
+        } else if (mongoose.connection.readyState === 2) {
+            // Already connecting, wait a bit
+            let retries = 5;
+            while (mongoose.connection.readyState !== 1 && retries > 0) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                retries--;
+            }
         }
+        next();
+    } catch (error) {
+        console.error('❌ MongoDB Connection Failed:', error.message);
+        return res.status(503).json({ 
+            message: 'Database is starting up, please try again.',
+            retryAfter: 3
+        });
     }
-    next();
 });
 
 // Routes
