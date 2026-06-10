@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Deal = require('./models/Deal');
 
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+
 dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URI;
