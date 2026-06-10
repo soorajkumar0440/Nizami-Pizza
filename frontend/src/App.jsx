@@ -26,6 +26,11 @@ function AppLayout() {
   const showSiteChrome = !isAdminRoute;
   const showHeader = showSiteChrome;
 
+  // Scroll to top on every route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const { siteName, logoUrl } = useSiteContact();
   const [splashFinished, setSplashFinished] = useState(false);
 

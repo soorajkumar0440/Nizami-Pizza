@@ -127,8 +127,8 @@ export default function Cart() {
                         <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.6)', marginBottom: '40px' }}>
                             Thank you, {successData.name}! We will call you on {successData.phone} when your order is ready.
                         </p>
-                        <Link to="/menu" className="btn btn-primary" style={{ padding: '15px 40px' }}>
-                            Back to Menu
+                        <Link to="/" className="btn btn-primary" style={{ padding: '15px 40px' }}>
+                            Back to Home
                         </Link>
                     </div>
                 </div>

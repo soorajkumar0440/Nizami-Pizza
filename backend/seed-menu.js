@@ -7,7 +7,8 @@ dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
 
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URI;
+// Connect explicitly to foodDB where the Vercel app is pointed!
+const MONGODB_URI = "mongodb+srv://lukezoy77_db_user:SSXR9KqjNDWulaR4@cluster0.besvfjn.mongodb.net/foodDB?retryWrites=true&w=majority";
 
 const menuItems = [
   // ROLLS

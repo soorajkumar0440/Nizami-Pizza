@@ -3,8 +3,8 @@
 .dark-pro-card {
   font-family: 'Inter', sans-serif;
   background: #0f0f0f;
-  padding: 16px 16px 20px 16px; /* Added more padding bottom */
-  border-radius: 32px; /* Increased radius */
+  padding: 14px 14px 18px 14px;
+  border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   position: relative;
@@ -27,10 +27,10 @@
 
 .dark-pro-img-box {
   width: 100%;
-  aspect-ratio: 1; /* Makes the image exactly square like the reference */
+  aspect-ratio: 1;
   height: auto;
-  border-radius: 24px; /* Increased image border radius */
-  margin-bottom: 16px;
+  border-radius: 22px;
+  margin-bottom: 14px;
   overflow: hidden;
   position: relative;
   cursor: pointer;
@@ -170,10 +170,10 @@
 
 .dark-pro-info h3 {
   font-family: 'Inter', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 900;
   color: #fff;
-  margin-bottom: 12px; /* Decreased space between heading and price */
+  margin-bottom: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -206,7 +206,7 @@
 .dp-new-price {
   font-family: 'Inter', sans-serif;
   color: #fff;
-  font-size: 1.8rem; /* Reduced from 2.2rem */
+  font-size: 1.65rem;
   font-weight: 900;
   display: flex;
   align-items: baseline;
@@ -224,8 +224,8 @@
 }
 
 .dp-add-circle {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.06);
