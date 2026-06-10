@@ -1464,7 +1464,7 @@
 
 @media (max-width: 768px) {
   .app-interactive-section {
-    padding: 80px 0;
+    padding: 80px 0 120px; /* Added extra bottom padding for FAB/nav clearance */
   }
   
   .app-floating-ui.p1 {
@@ -1490,7 +1490,7 @@
   }
   
   .app-interactive-section {
-    padding: 60px 0;
+    padding: 60px 0 140px; /* Extra bottom padding to clear the bottom nav bar */
   }
   
   .delivery-wrapper {
