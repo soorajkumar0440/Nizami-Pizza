@@ -1491,15 +1491,30 @@
   
   .app-interactive-section {
     padding: 60px 0 140px; /* Extra bottom padding to clear the bottom nav bar */
+    /* GPU Fixes for Mobile Scroll Glitch */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
   .delivery-wrapper {
     max-width: 100%;
   }
 
+  .app-content-v2 p {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+
   .contact-item {
     padding: 15px;
     gap: 15px;
+    /* GPU Fixes for Mobile Scroll Glitch */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   .icon-circle {
